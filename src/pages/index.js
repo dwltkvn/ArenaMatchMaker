@@ -149,6 +149,12 @@ class MAMMPage extends React.Component {
             stateMatchMaking: stateNames.MATCHED,
             stateOpponentUsername: "Hell#123"
           })
+          setTimeout(() => {
+            this.setState({
+              stateOpponentConfirmation: true,
+              stateDisplayOpponentConfirmation: true
+            })
+          }, 5000)
         }, 3000)
       } else {
         // User is signed out.
@@ -183,12 +189,12 @@ class MAMMPage extends React.Component {
   onConfirmation = () => {
     this.setState({ stateMatchMaking: stateNames.STARTED })
     // send back the confirmation to the opponent
-    setTimeout(() => {
+    /*setTimeout(() => {
       this.setState({
         stateOpponentConfirmation: true,
         stateDisplayOpponentConfirmation: true
       })
-    }, 3000)
+    }, 3000)*/
   }
 
   render() {
@@ -346,14 +352,20 @@ class MAMMPage extends React.Component {
           onClose={() =>
             this.setState({ stateDisplayOpponentConfirmation: false })
           }
-          autoHideDuration={6000}
+          autoHideDuration={
+            this.state.stateMatchMaking === stateNames.MATCHED ? null : 6000
+          }
           message={
             this.state.stateOpponentUsername + " confirmed starting the match"
           }
           action={
             <React.Fragment>
               {this.state.stateMatchMaking !== stateNames.MATCHED ? null : (
-                <Button color="secondary" size="small">
+                <Button
+                  color="secondary"
+                  size="small"
+                  onClick={() => this.onConfirmation()}
+                >
                   Send Confirmation
                 </Button>
               )}
