@@ -92,12 +92,15 @@ class MAMMPage extends React.Component {
     //this.register = this.register.bind(this)
     this.onUsernameChange = this.onUsernameChange.bind(this)
     this.onRegistering = this.onRegistering.bind(this)
+    this.onCancelRegistration = this.onCancelRegistration.bind(this)
     this.onLogOut = this.onLogOut.bind(this)
     this.onConfirmation = this.onConfirmation.bind(this)
+    this.onAbort = this.onAbort.bind(this)
 
     // init the class state
     this.state = {
       stateMatchMaking: stateNames.INIT,
+      stateUsername: "",
       stateOpponentUsername: "",
       stateGameMode: Object.keys(gameModeNames)[0],
       stateOpponentConfirmation: false,
@@ -105,6 +108,9 @@ class MAMMPage extends React.Component {
       stateUID: null,
       stateAuth: false
     }
+
+    // classes variables
+    this.ts = 0
   }
 
   componentDidMount() {}
@@ -125,7 +131,10 @@ class MAMMPage extends React.Component {
     const isValidUsername = !isNaN(vArray[s - 1]) & (vArray[s - 1].length > 0)
 
     if (isValidUsername)
-      this.setState({ stateMatchMaking: stateNames.REGISTERING })
+      this.setState({
+        stateMatchMaking: stateNames.REGISTERING,
+        stateUsername: v
+      })
     else this.setState({ stateMatchMaking: stateNames.INIT })
   }
 
@@ -137,6 +146,7 @@ class MAMMPage extends React.Component {
         // User is signed in.
         var isAnonymous = user.isAnonymous
         var uid = user.uid
+        this.ts = Date.now()
         console.log(uid)
 
         this.setState({
@@ -144,7 +154,17 @@ class MAMMPage extends React.Component {
           stateUID: uid,
           stateAuth: true
         })
-        setTimeout(() => {
+
+        const fbpath = `${uid}`
+        const obj = {
+          username: this.state.stateUsername,
+          timestamp: this.ts,
+          gameMode: this.state.stateGameMode,
+          opponent: null
+        }
+        firebase.database().ref(fbpath).set(obj)
+
+        /*setTimeout(() => {
           this.setState({
             stateMatchMaking: stateNames.MATCHED,
             stateOpponentUsername: "Hell#123"
@@ -155,9 +175,11 @@ class MAMMPage extends React.Component {
               stateDisplayOpponentConfirmation: true
             })
           }, 5000)
-        }, 3000)
+        }, 3000)*/
       } else {
-        // User is signed out.
+        // User is signed out ... really useful ?
+        const fbpath = `${uid}`
+        firebase.database().ref(fbpath).set({})
         this.setState({ stateUID: null, stateAuth: false })
       }
       // ...
@@ -173,13 +195,15 @@ class MAMMPage extends React.Component {
         console.log(errorMessage)
         // ...
       })
-    /*this.setState({ stateMatchMaking: stateNames.SEARCHING })
-    setTimeout(() => {
-      this.setState({
-        stateMatchMaking: stateNames.MATCHED,
-        stateOpponentUsername: "Hell#123"
-      })
-    }, 3000)*/
+  }
+
+  onCancelRegistration = () => {
+    this.setState({
+      stateMatchMaking: stateNames.REGISTERING
+    })
+    const fbpath = `${this.state.stateUID}`
+    const obj = {}
+    firebase.database().ref(fbpath).set(obj)
   }
 
   onLogOut = () => {
@@ -195,6 +219,10 @@ class MAMMPage extends React.Component {
         stateDisplayOpponentConfirmation: true
       })
     }, 3000)*/
+  }
+
+  onAbort = () => {
+    this.onCancelRegistration()
   }
 
   render() {
@@ -227,6 +255,10 @@ class MAMMPage extends React.Component {
                   fullWidth
                   onChange={this.onUsernameChange}
                   style={classes.marginStyle}
+                  InputProps={{
+                    readOnly:
+                      this.state.stateMatchMaking > stateNames.REGISTERING
+                  }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -263,6 +295,8 @@ class MAMMPage extends React.Component {
                     fullWidth
                     type="text"
                     value={this.state.stateOpponentUsername}
+                    disabled
+                    disableUnderline
                     endAdornment={
                       <InputAdornment position="end">
                         <Tooltip title="Copy to clipboard">
@@ -299,6 +333,7 @@ class MAMMPage extends React.Component {
                       disabled={
                         this.state.stateMatchMaking !== stateNames.SEARCHING
                       }
+                      onClick={this.onCancelRegistration}
                       color="secondary"
                     >
                       Cancel
@@ -320,6 +355,7 @@ class MAMMPage extends React.Component {
                       disabled={
                         this.state.stateMatchMaking !== stateNames.MATCHED
                       }
+                      onClick={this.onAbort}
                       color="secondary"
                     >
                       Abort
