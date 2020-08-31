@@ -14,7 +14,6 @@ import Select from "@material-ui/core/Select"
 import MenuItem from "@material-ui/core/MenuItem"
 import InputLabel from "@material-ui/core/InputLabel"
 import FormControl from "@material-ui/core/FormControl"
-import MobileStepper from "@material-ui/core/MobileStepper"
 import LinearProgress from "@material-ui/core/LinearProgress"
 import Button from "@material-ui/core/Button"
 import ButtonGroup from "@material-ui/core/ButtonGroup"
@@ -22,7 +21,6 @@ import InputAdornment from "@material-ui/core/InputAdornment"
 import IconButton from "@material-ui/core/IconButton"
 import Input from "@material-ui/core/Input"
 import Tooltip from "@material-ui/core/Tooltip"
-import Paper from "@material-ui/core/Paper"
 import Grid from "@material-ui/core/Grid"
 import AppBar from "@material-ui/core/AppBar"
 import Toolbar from "@material-ui/core/Toolbar"
@@ -34,6 +32,8 @@ import Snackbar from "@material-ui/core/Snackbar"
 import HelpIcon from "@material-ui/icons/Help"
 import FileCopyIcon from "@material-ui/icons/FileCopy"
 import CloseIcon from "@material-ui/icons/Close"
+
+import RegisterCmpnt from "../components/registerComponent"
 
 const styles = {
   mainLayout: {
@@ -68,8 +68,7 @@ const stateNames = {
   REGISTERING: 1,
   SEARCHING: 2,
   MATCHED: 3,
-  STARTED: 4,
-  STATENAMES___MAX: 5
+  STARTED: 4
 }
 const gameModeNames = {
   HistoricBrawl: 0,
@@ -160,10 +159,44 @@ class MAMMPage extends React.Component {
           username: this.state.stateUsername,
           timestamp: this.ts,
           gameMode: this.state.stateGameMode,
-          opponent: null
+          opponent: { username: "", timestamp: 0 }
         }
-        firebase.database().ref(fbpath).set(obj)
-
+        firebase
+          .database()
+          .ref(fbpath)
+          .set(obj)
+          .then(() => {
+            //this.waitForOpponent()
+            firebase
+              .database()
+              .ref(fbpath)
+              .on("value", snapshot => {
+                if (snapshot.val() && snapshot.val().opponent) {
+                  if (snapshot.val().opponent.username) {
+                    console.log("fb match")
+                    this.setState({
+                      // opponent/username valid
+                      stateMatchMaking: stateNames.MATCHED,
+                      stateOpponentUsername: snapshot.val().opponent.username
+                    })
+                  } else {
+                    // no username
+                    console.log("fb no username")
+                    this.setState({
+                      stateMatchMaking: stateNames.SEARCHING,
+                      stateOpponentUsername: ""
+                    })
+                  }
+                } else {
+                  // no opponent field
+                  console.log("fb no opponent field")
+                  this.setState({
+                    stateMatchMaking: stateNames.SEARCHING,
+                    stateOpponentUsername: ""
+                  })
+                }
+              })
+          })
         /*setTimeout(() => {
           this.setState({
             stateMatchMaking: stateNames.MATCHED,
@@ -198,12 +231,21 @@ class MAMMPage extends React.Component {
   }
 
   onCancelRegistration = () => {
-    this.setState({
-      stateMatchMaking: stateNames.REGISTERING
-    })
     const fbpath = `${this.state.stateUID}`
     const obj = {}
-    firebase.database().ref(fbpath).set(obj)
+
+    firebase.database().ref(fbpath).off()
+
+    firebase
+      .database()
+      .ref(fbpath)
+      .set(obj)
+      .then(() =>
+        this.setState({
+          stateMatchMaking: stateNames.REGISTERING,
+          stateOpponentUsername: ""
+        })
+      )
   }
 
   onLogOut = () => {
@@ -248,7 +290,15 @@ class MAMMPage extends React.Component {
           </Container>
           <Container maxWidth="xs" style={classes.mainContainer}>
             <Grid container spacing={3}>
-              <Grid item xs={12} />
+              <Grid item xs={12}>
+                <RegisterCmpnt
+                  propMatchMaking={this.state.stateMatchMaking}
+                  propStateNames={stateNames}
+                  cbOnRegisterBtnClicked={(u, g) =>
+                    console.log("Click click " + u + " : " + g)
+                  }
+                />
+              </Grid>
               <Grid item xs={12}>
                 <TextField
                   label="Your MTGA Username"
@@ -313,7 +363,7 @@ class MAMMPage extends React.Component {
                 ) : null}
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid container justify="center">
                 <ButtonGroup>
                   {this.state.stateMatchMaking !== stateNames.REGISTERING &&
                   this.state.stateMatchMaking !== stateNames.INIT ? null : (
