@@ -34,6 +34,8 @@ import FileCopyIcon from "@material-ui/icons/FileCopy"
 import CloseIcon from "@material-ui/icons/Close"
 
 import RegisterCmpnt from "../components/registerComponent"
+import SearchMatchCmpnt from "../components/searchMatchComponent"
+import OpponentFoundCmpnt from "../components/opponentFoundComponent"
 
 const styles = {
   mainLayout: {
@@ -101,7 +103,7 @@ class MAMMPage extends React.Component {
       stateMatchMaking: stateNames.INIT,
       stateUsername: "",
       stateOpponentUsername: "",
-      stateGameMode: Object.keys(gameModeNames)[0],
+      stateGameMode: "",
       stateOpponentConfirmation: false,
       stateDisplayOpponentConfirmation: false,
       stateUID: null,
@@ -176,7 +178,7 @@ class MAMMPage extends React.Component {
                     console.log("fb match")
                     this.setState({
                       // opponent/username valid
-                      stateMatchMaking: stateNames.MATCHED,
+                      //stateMatchMaking: stateNames.MATCHED,
                       stateOpponentUsername: snapshot.val().opponent.username
                     })
                   } else {
@@ -242,7 +244,7 @@ class MAMMPage extends React.Component {
       .set(obj)
       .then(() =>
         this.setState({
-          stateMatchMaking: stateNames.REGISTERING,
+          stateMatchMaking: stateNames.INIT,
           stateOpponentUsername: ""
         })
       )
@@ -290,139 +292,42 @@ class MAMMPage extends React.Component {
           </Container>
           <Container maxWidth="xs" style={classes.mainContainer}>
             <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <RegisterCmpnt
-                  propMatchMaking={this.state.stateMatchMaking}
-                  propStateNames={stateNames}
-                  cbOnRegisterBtnClicked={(u, g) =>
-                    console.log("Click click " + u + " : " + g)
-                  }
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Your MTGA Username"
-                  fullWidth
-                  onChange={this.onUsernameChange}
-                  style={classes.marginStyle}
-                  InputProps={{
-                    readOnly:
-                      this.state.stateMatchMaking > stateNames.REGISTERING
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl style={classes.selectGameMode}>
-                  <InputLabel>Game Mode</InputLabel>
-                  <Select
-                    autoWidth
-                    value={this.state.stateGameMode}
-                    onChange={this.onGameModeChange}
-                    startAdornment={
-                      <InputAdornment position="start">
-                        <Tooltip
-                          title={gameModeDescription[this.state.stateGameMode]}
-                        >
-                          <IconButton>
-                            <HelpIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </InputAdornment>
-                    }
-                  >
-                    {Object.entries(gameModeNames).map(v => (
-                      <MenuItem value={v[0]} key={v[1]}>
-                        {v[0]}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <FormControl style={classes.selectGameMode}>
-                  <InputLabel>Your Opponent Username</InputLabel>
-                  <Input
-                    fullWidth
-                    type="text"
-                    value={this.state.stateOpponentUsername}
-                    disabled
-                    disableUnderline
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <Tooltip title="Copy to clipboard">
-                          <IconButton>
-                            <FileCopyIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </InputAdornment>
+              {this.state.stateMatchMaking !== stateNames.INIT ? null : (
+                <Grid item xs={12}>
+                  <RegisterCmpnt
+                    defaultUsername={this.state.stateUsername}
+                    cbOnRegisterBtnClicked={(u, g) =>
+                      this.setState(
+                        {
+                          stateUsername: u,
+                          stateGameMode: g,
+                          stateMatchMaking: stateNames.REGISTERING
+                        },
+                        () => setTimeout(() => this.onRegistering(), 5000)
+                      )
                     }
                   />
-                </FormControl>
-                {this.state.stateMatchMaking === stateNames.SEARCHING ? (
-                  <LinearProgress />
-                ) : null}
-              </Grid>
-
-              <Grid container justify="center">
-                <ButtonGroup>
-                  {this.state.stateMatchMaking !== stateNames.REGISTERING &&
-                  this.state.stateMatchMaking !== stateNames.INIT ? null : (
-                    <Button
-                      disabled={
-                        this.state.stateMatchMaking !== stateNames.REGISTERING
-                      }
-                      onClick={this.onRegistering}
-                      color="primary"
-                    >
-                      Register
-                    </Button>
-                  )}
-                  {this.state.stateMatchMaking !==
-                  stateNames.SEARCHING ? null : (
-                    <Button
-                      disabled={
-                        this.state.stateMatchMaking !== stateNames.SEARCHING
-                      }
-                      onClick={this.onCancelRegistration}
-                      color="secondary"
-                    >
-                      Cancel
-                    </Button>
-                  )}
-                  {this.state.stateMatchMaking !== stateNames.MATCHED ? null : (
-                    <Button
-                      disabled={
-                        this.state.stateMatchMaking !== stateNames.MATCHED
-                      }
-                      onClick={this.onConfirmation}
-                      color="primary"
-                    >
-                      Confirm
-                    </Button>
-                  )}
-                  {this.state.stateMatchMaking !== stateNames.MATCHED ? null : (
-                    <Button
-                      disabled={
-                        this.state.stateMatchMaking !== stateNames.MATCHED
-                      }
-                      onClick={this.onAbort}
-                      color="secondary"
-                    >
-                      Abort
-                    </Button>
-                  )}
-                  {this.state.stateMatchMaking !== stateNames.STARTED ? null : (
-                    <Button
-                      disabled={
-                        this.state.stateMatchMaking !== stateNames.STARTED
-                      }
-                      color="secondary"
-                    >
-                      Find Next Match
-                    </Button>
-                  )}
-                </ButtonGroup>
-              </Grid>
+                </Grid>
+              )}
+              {this.state.stateMatchMaking !== stateNames.SEARCHING &&
+              this.state.stateMatchMaking !== stateNames.REGISTERING ? null : (
+                <Grid item xs={12}>
+                  <SearchMatchCmpnt
+                    cbOnCancel={() => this.onCancelRegistration()}
+                    propOpponentFound={this.state.stateOpponentUsername !== ""}
+                    disableBtn={
+                      this.state.stateMatchMaking !== stateNames.SEARCHING
+                    }
+                  />
+                </Grid>
+              )}
+              {this.state.stateMatchMaking !== stateNames.MATCHED ? null : (
+                <Grid item xs={12}>
+                  <OpponentFoundCmpnt
+                    propOpponentUserName={this.state.stateOpponentUsername}
+                  />
+                </Grid>
+              )}
             </Grid>
           </Container>
         </div>
