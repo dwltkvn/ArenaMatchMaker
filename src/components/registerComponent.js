@@ -40,6 +40,9 @@ class RegisterComponent extends React.Component {
     super(props)
     // bind function to this class
     //this.register = this.register.bind(this)
+    this.onUsernameChange = this.onUsernameChange.bind(this)
+    this.validateUsername = this.validateUsername.bind(this)
+    this.onGameModeChange = this.onGameModeChange.bind(this)
 
     // init the class state
     this.state = {
@@ -52,7 +55,9 @@ class RegisterComponent extends React.Component {
     //this.ts = 0
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    this.validateUsername(this.props.defaultUsername)
+  }
 
   componentWillUnmount() {}
 
@@ -61,8 +66,7 @@ class RegisterComponent extends React.Component {
     this.setState({ stateGameMode: v })
   }
 
-  onUsernameChange = event => {
-    const v = event.target.value
+  validateUsername = v => {
     const vArray = v.split("#")
     const s = vArray.length
     if (s < 2) return // if there is not 2 or more elements, ret
@@ -78,21 +82,25 @@ class RegisterComponent extends React.Component {
     //else this.setState({ stateMatchMaking: stateNames.INIT })
   }
 
+  onUsernameChange = event => {
+    const v = event.target.value
+    this.validateUsername(v)
+  }
+
   render() {
     const classes = styles
     const props = this.props
 
     return (
       <Grid container spacing={3}>
+        <Grid item xs={12} />
         <Grid item xs={12}>
           <TextField
             label="Your MTGA Username"
             fullWidth
             onChange={this.onUsernameChange}
             style={classes.marginStyle}
-            InputProps={{
-              readOnly: props.propMatchMaking > props.propStateNames.REGISTERING
-            }}
+            defaultValue={props.defaultUsername}
           />
         </Grid>
         <Grid item xs={12}>
@@ -122,6 +130,7 @@ class RegisterComponent extends React.Component {
             </Select>
           </FormControl>
         </Grid>
+        <Grid item xs={12} />
         <Grid container justify="center">
           <Button
             disabled={this.state.stateValideUsername === false}
