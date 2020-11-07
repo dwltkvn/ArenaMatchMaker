@@ -181,6 +181,11 @@ class MAMMPage extends React.Component {
                       //stateMatchMaking: stateNames.MATCHED,
                       stateOpponentUsername: snapshot.val().opponent.username
                     })
+                    setTimeout(
+                      () =>
+                        this.setState({ stateMatchMaking: stateNames.MATCHED }),
+                      2500
+                    )
                   } else {
                     // no username
                     console.log("fb no username")
@@ -316,7 +321,8 @@ class MAMMPage extends React.Component {
                     cbOnCancel={() => this.onCancelRegistration()}
                     propOpponentFound={this.state.stateOpponentUsername !== ""}
                     disableBtn={
-                      this.state.stateMatchMaking !== stateNames.SEARCHING
+                      this.state.stateMatchMaking !== stateNames.SEARCHING ||
+                      this.state.stateOpponentUsername !== ""
                     }
                   />
                 </Grid>
@@ -328,6 +334,9 @@ class MAMMPage extends React.Component {
                   />
                 </Grid>
               )}
+              <Grid item xs={12}>
+                <OpponentFoundCmpnt opponentUsername="Heel#999" />
+              </Grid>
             </Grid>
           </Container>
         </div>

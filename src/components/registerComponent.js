@@ -99,7 +99,6 @@ class RegisterComponent extends React.Component {
             label="Your MTGA Username"
             fullWidth
             onChange={this.onUsernameChange}
-            style={classes.marginStyle}
             defaultValue={props.defaultUsername}
           />
         </Grid>

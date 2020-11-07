@@ -10,8 +10,12 @@ import CardContent from "@material-ui/core/CardContent"
 import CardMedia from "@material-ui/core/CardMedia"
 import Button from "@material-ui/core/Button"
 import Typography from "@material-ui/core/Typography"
+import TextField from "@material-ui/core/TextField"
+import InputAdornment from "@material-ui/core/InputAdornment"
 
 // material-ui icons import
+import IconButton from "@material-ui/core/IconButton"
+import FileCopyIcon from "@material-ui/icons/FileCopy"
 
 const styles = {}
 
@@ -40,31 +44,31 @@ class OpponentFoundComponent extends React.Component {
       <Grid container spacing={3}>
         <Grid item xs={12} />
         <Grid item xs={12}>
-          <Card>
-            <CardActionArea>
-              <CardMedia
-                image="./images/gatsby-icon.png"
-                title="Contemplative Reptile"
-              />
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="h2">
-                  {props.propOpponentUserName}
-                </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
-                  Go to MTG Arena, start the match and click on button to
-                  confirm
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-            <CardActions>
-              <Button size="small" color="secondary">
-                Abort
-              </Button>
-              <Button size="small" color="primary">
-                Confirm
-              </Button>
-            </CardActions>
-          </Card>
+          <TextField
+            label="Opponent Username"
+            fullWidth
+            defaultValue={props.propOpponentUserName}
+            variant="outlined"
+            disabled={true}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton>
+                    <FileCopyIcon />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
+          />
+        </Grid>
+        <Grid item xs={12} />
+        <Grid container justify="space-evenly">
+          <Button color="secondary" size="large" variant="outlined">
+            Abort
+          </Button>
+          <Button color="primary" size="large" variant="outlined">
+            Confirm
+          </Button>
         </Grid>
       </Grid>
     )
