@@ -15,7 +15,7 @@ import Typography from "@material-ui/core/Typography"
 
 const styles = {}
 
-class SearchMatchComponent extends React.Component {
+class OpponentFoundComponent extends React.Component {
   constructor(props) {
     super(props)
     // bind function to this class
@@ -71,4 +71,4 @@ class SearchMatchComponent extends React.Component {
   }
 }
 
-export default SearchMatchComponent
+export default OpponentFoundComponent

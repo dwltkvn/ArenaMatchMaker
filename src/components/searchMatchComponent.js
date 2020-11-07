@@ -11,7 +11,9 @@ import Box from "@material-ui/core/Box"
 // material-ui icons import
 import CheckIcon from "@material-ui/icons/Check"
 
-const styles = {}
+const styles = {
+  boxBorder: { border: "dashed red" }
+}
 
 class SearchMatchComponent extends React.Component {
   constructor(props) {
@@ -41,38 +43,47 @@ class SearchMatchComponent extends React.Component {
           <Box position="relative" display="inline-flex">
             <Fade
               in={props.propOpponentFound === false}
-              timeout={2000}
-              unmountOnExit
+              timeout={{ enter: 1000, exit: 1000 }}
             >
               <CircularProgress size="6rem" variant="indeterminate" />
             </Fade>
-
             <Fade
               in={props.propOpponentFound === true}
-              timeout={4000}
+              timeout={{ enter: 2000, exit: 1000 }}
               unmountOnExit
             >
-              <CircularProgress size="6rem" variant="static" value={100} />
-            </Fade>
-
-            <Box
-              top={0}
-              left={0}
-              bottom={0}
-              right={0}
-              position="absolute"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Typography
-                variant="caption"
-                component="div"
-                color="textSecondary"
+              <Box
+                top={0}
+                left={0}
+                bottom={0}
+                right={0}
+                position="absolute"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
               >
-                <CheckIcon />
-              </Typography>
-            </Box>
+                <CircularProgress size="6rem" variant="static" value={100} />
+
+                <Box
+                  top={0}
+                  left={0}
+                  bottom={0}
+                  right={0}
+                  position="absolute"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Typography
+                    variant="caption"
+                    component="div"
+                    color="textSecondary"
+                  >
+                    <CheckIcon />
+                  </Typography>
+                </Box>
+              </Box>
+            </Fade>
           </Box>
         </Grid>
         <Grid item xs={12} />
