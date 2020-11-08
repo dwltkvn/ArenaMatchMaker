@@ -63,7 +63,12 @@ class OpponentFoundComponent extends React.Component {
         </Grid>
         <Grid item xs={12} />
         <Grid container justify="space-evenly">
-          <Button color="secondary" size="large" variant="outlined">
+          <Button
+            color="secondary"
+            size="large"
+            variant="outlined"
+            onClick={() => props.cbOnAbort()}
+          >
             Abort
           </Button>
           <Button color="primary" size="large" variant="outlined">

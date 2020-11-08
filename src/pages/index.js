@@ -96,7 +96,7 @@ class MAMMPage extends React.Component {
     this.onCancelRegistration = this.onCancelRegistration.bind(this)
     this.onLogOut = this.onLogOut.bind(this)
     this.onConfirmation = this.onConfirmation.bind(this)
-    this.onAbort = this.onAbort.bind(this)
+    this.onAbortMatch = this.onAbortMatch.bind(this)
 
     // init the class state
     this.state = {
@@ -270,7 +270,7 @@ class MAMMPage extends React.Component {
     }, 3000)*/
   }
 
-  onAbort = () => {
+  onAbortMatch = () => {
     this.onCancelRegistration()
   }
 
@@ -331,12 +331,10 @@ class MAMMPage extends React.Component {
                 <Grid item xs={12}>
                   <OpponentFoundCmpnt
                     propOpponentUserName={this.state.stateOpponentUsername}
+                    cbOnAbort={() => this.onAbortMatch()}
                   />
                 </Grid>
               )}
-              <Grid item xs={12}>
-                <OpponentFoundCmpnt opponentUsername="Heel#999" />
-              </Grid>
             </Grid>
           </Container>
         </div>
