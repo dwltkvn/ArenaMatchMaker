@@ -3,13 +3,7 @@ import React from "react"
 // material-ui import
 import Grid from "@material-ui/core/Grid"
 
-import Card from "@material-ui/core/Card"
-import CardActionArea from "@material-ui/core/CardActionArea"
-import CardActions from "@material-ui/core/CardActions"
-import CardContent from "@material-ui/core/CardContent"
-import CardMedia from "@material-ui/core/CardMedia"
 import Button from "@material-ui/core/Button"
-import Typography from "@material-ui/core/Typography"
 import TextField from "@material-ui/core/TextField"
 import InputAdornment from "@material-ui/core/InputAdornment"
 import Box from "@material-ui/core/Box"
@@ -28,11 +22,13 @@ class OpponentFoundComponent extends React.Component {
     super(props)
     // bind function to this class
     //this.register = this.register.bind(this)
+    this.onConfirmation = this.onConfirmation.bind(this)
     this.maxCount = 30
     // init the class state
-    this.state = { stateCount: 0 }
+    this.state = { stateCount: 0, stateConfirmed: false }
 
     // classes variables
+    this.inserval = null
     //this.ts = 0
   }
 
@@ -47,6 +43,11 @@ class OpponentFoundComponent extends React.Component {
 
   componentWillUnmount() {
     clearInterval(this.interval)
+  }
+
+  onConfirmation() {
+    clearInterval(this.interval)
+    this.setState({ stateConfirmed: true, stateCount: 0 })
   }
 
   render() {
@@ -85,13 +86,21 @@ class OpponentFoundComponent extends React.Component {
             >
               Abort
             </Button>
-            <LinearProgress
-              variant="determinate"
-              value={(this.state.stateCount * 100) / this.maxCount}
-              color="secondary"
-            />
+            {this.state.stateConfirmed ? null : (
+              <LinearProgress
+                variant="determinate"
+                value={(this.state.stateCount * 100) / this.maxCount}
+                color="secondary"
+              />
+            )}
           </Box>
-          <Button color="primary" size="large" variant="outlined">
+          <Button
+            color="primary"
+            size="large"
+            variant="outlined"
+            disabled={this.state.stateConfirmed}
+            onClick={() => this.onConfirmation()}
+          >
             Confirm
           </Button>
         </Grid>

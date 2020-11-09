@@ -9,18 +9,8 @@ import firebase from "../components/firebase"
 
 // material-ui import
 import Container from "@material-ui/core/Container"
-import TextField from "@material-ui/core/TextField"
-import Select from "@material-ui/core/Select"
-import MenuItem from "@material-ui/core/MenuItem"
-import InputLabel from "@material-ui/core/InputLabel"
-import FormControl from "@material-ui/core/FormControl"
-import LinearProgress from "@material-ui/core/LinearProgress"
 import Button from "@material-ui/core/Button"
-import ButtonGroup from "@material-ui/core/ButtonGroup"
-import InputAdornment from "@material-ui/core/InputAdornment"
 import IconButton from "@material-ui/core/IconButton"
-import Input from "@material-ui/core/Input"
-import Tooltip from "@material-ui/core/Tooltip"
 import Grid from "@material-ui/core/Grid"
 import AppBar from "@material-ui/core/AppBar"
 import Toolbar from "@material-ui/core/Toolbar"
@@ -30,8 +20,6 @@ import Snackbar from "@material-ui/core/Snackbar"
 import Slide from "@material-ui/core/Slide"
 
 // icons
-import HelpIcon from "@material-ui/icons/Help"
-import FileCopyIcon from "@material-ui/icons/FileCopy"
 import CloseIcon from "@material-ui/icons/Close"
 
 import RegisterCmpnt from "../components/registerComponent"
@@ -74,19 +62,6 @@ const stateNames = {
   MATCHED: 3,
   STARTED: 4
 }
-const gameModeNames = {
-  HistoricBrawl: 0,
-  Gladiator: 1,
-  Artisan: 2,
-  Pauper: 3
-}
-
-const gameModeDescription = {
-  HistoricBrawl: "Singleton mode using a Commander and cards from Historic",
-  Gladiator: "Singleton mode with a deck of 100 cards",
-  Artisan: "Deck using only umcommon/common cards and basic lands",
-  Pauper: "Deck using only commons cards and basic lands"
-}
 
 class MAMMPage extends React.Component {
   constructor(props) {
@@ -119,11 +94,6 @@ class MAMMPage extends React.Component {
   componentDidMount() {}
 
   componentWillUnmount() {}
-
-  onGameModeChange = event => {
-    const v = event.target.value
-    this.setState({ stateGameMode: v })
-  }
 
   onRegistering = () => {
     // prepare onAuth callback
