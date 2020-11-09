@@ -27,6 +27,7 @@ import Toolbar from "@material-ui/core/Toolbar"
 import Typography from "@material-ui/core/Typography"
 import Box from "@material-ui/core/Box"
 import Snackbar from "@material-ui/core/Snackbar"
+import Slide from "@material-ui/core/Slide"
 
 // icons
 import HelpIcon from "@material-ui/icons/Help"
@@ -66,6 +67,7 @@ const styles = {
 }
 
 const stateNames = {
+  TRANSITION: -1,
   INIT: 0,
   REGISTERING: 1,
   SEARCHING: 2,
@@ -91,7 +93,6 @@ class MAMMPage extends React.Component {
     super(props)
     // bind function to this class
     //this.register = this.register.bind(this)
-    this.onUsernameChange = this.onUsernameChange.bind(this)
     this.onRegistering = this.onRegistering.bind(this)
     this.onCancelRegistration = this.onCancelRegistration.bind(this)
     this.onLogOut = this.onLogOut.bind(this)
@@ -112,6 +113,7 @@ class MAMMPage extends React.Component {
 
     // classes variables
     this.ts = 0
+    this.transitionSpeed = 500
   }
 
   componentDidMount() {}
@@ -121,22 +123,6 @@ class MAMMPage extends React.Component {
   onGameModeChange = event => {
     const v = event.target.value
     this.setState({ stateGameMode: v })
-  }
-
-  onUsernameChange = event => {
-    const v = event.target.value
-    const vArray = v.split("#")
-    const s = vArray.length
-    if (s < 2) return // if there is not 2 or more elements, ret
-    // username is valid if the last elem is not a Nan and if its size is more than 0
-    const isValidUsername = !isNaN(vArray[s - 1]) & (vArray[s - 1].length > 0)
-
-    if (isValidUsername)
-      this.setState({
-        stateMatchMaking: stateNames.REGISTERING,
-        stateUsername: v
-      })
-    else this.setState({ stateMatchMaking: stateNames.INIT })
   }
 
   onRegistering = () => {
@@ -179,12 +165,20 @@ class MAMMPage extends React.Component {
                     this.setState({
                       // opponent/username valid
                       //stateMatchMaking: stateNames.MATCHED,
+
                       stateOpponentUsername: snapshot.val().opponent.username
                     })
                     setTimeout(
                       () =>
+                        this.setState({
+                          stateMatchMaking: stateNames.TRANSITION
+                        }),
+                      this.transitionSpeed * 2
+                    )
+                    setTimeout(
+                      () =>
                         this.setState({ stateMatchMaking: stateNames.MATCHED }),
-                      2500
+                      this.transitionSpeed * 3
                     )
                   } else {
                     // no username
@@ -248,10 +242,17 @@ class MAMMPage extends React.Component {
       .ref(fbpath)
       .set(obj)
       .then(() =>
-        this.setState({
-          stateMatchMaking: stateNames.INIT,
-          stateOpponentUsername: ""
-        })
+        this.setState(
+          {
+            stateMatchMaking: stateNames.TRANSITION,
+            stateOpponentUsername: ""
+          },
+          () =>
+            setTimeout(
+              () => this.setState({ stateMatchMaking: stateNames.INIT }),
+              this.transitionSpeed
+            )
+        )
       )
   }
 
@@ -260,7 +261,14 @@ class MAMMPage extends React.Component {
   }
 
   onConfirmation = () => {
-    this.setState({ stateMatchMaking: stateNames.STARTED })
+    this.setState(
+      { stateMatchMaking: stateNames.TRANSIION },
+      setTimeout(
+        () => this.setState({ stateMatchMaking: stateNames.STARTED }),
+        this.transitionSpeed
+      )
+    )
+
     // send back the confirmation to the opponent
     /*setTimeout(() => {
       this.setState({
@@ -297,7 +305,20 @@ class MAMMPage extends React.Component {
           </Container>
           <Container maxWidth="xs" style={classes.mainContainer}>
             <Grid container spacing={3}>
-              {this.state.stateMatchMaking !== stateNames.INIT ? null : (
+              <Slide
+                direction={
+                  this.state.stateMatchMaking === stateNames.INIT
+                    ? "left"
+                    : "right"
+                }
+                in={this.state.stateMatchMaking === stateNames.INIT}
+                mountOnEnter
+                unmountOnExit
+                timeout={{
+                  enter: this.transitionSpeed,
+                  exit: this.transitionSpeed
+                }}
+              >
                 <Grid item xs={12}>
                   <RegisterCmpnt
                     defaultUsername={this.state.stateUsername}
@@ -306,16 +327,44 @@ class MAMMPage extends React.Component {
                         {
                           stateUsername: u,
                           stateGameMode: g,
-                          stateMatchMaking: stateNames.REGISTERING
+                          stateMatchMaking: stateNames.TRANSITION
                         },
-                        () => setTimeout(() => this.onRegistering(), 5000)
+                        () => {
+                          setTimeout(
+                            () =>
+                              this.setState({
+                                stateMatchMaking: stateNames.REGISTERING
+                              }),
+                            this.transitionSpeed
+                          )
+                          setTimeout(
+                            () => this.onRegistering(),
+                            this.transitionSpeed * 5
+                          )
+                        }
                       )
                     }
                   />
                 </Grid>
-              )}
-              {this.state.stateMatchMaking !== stateNames.SEARCHING &&
-              this.state.stateMatchMaking !== stateNames.REGISTERING ? null : (
+              </Slide>
+              <Slide
+                direction={
+                  this.state.stateMatchMaking === stateNames.SEARCHING ||
+                  this.state.stateMatchMaking === stateNames.REGISTERING
+                    ? "left"
+                    : "right"
+                }
+                in={
+                  this.state.stateMatchMaking === stateNames.SEARCHING ||
+                  this.state.stateMatchMaking === stateNames.REGISTERING
+                }
+                mountOnEnter
+                unmountOnExit
+                timeout={{
+                  enter: this.transitionSpeed,
+                  exit: this.transitionSpeed
+                }}
+              >
                 <Grid item xs={12}>
                   <SearchMatchCmpnt
                     cbOnCancel={() => this.onCancelRegistration()}
@@ -326,15 +375,28 @@ class MAMMPage extends React.Component {
                     }
                   />
                 </Grid>
-              )}
-              {this.state.stateMatchMaking !== stateNames.MATCHED ? null : (
+              </Slide>
+              <Slide
+                direction={
+                  this.state.stateMatchMaking === stateNames.MATCHED
+                    ? "left"
+                    : "right"
+                }
+                in={this.state.stateMatchMaking === stateNames.MATCHED}
+                mountOnEnter
+                unmountOnExit
+                timeout={{
+                  enter: this.transitionSpeed,
+                  exit: this.transitionSpeed
+                }}
+              >
                 <Grid item xs={12}>
                   <OpponentFoundCmpnt
                     propOpponentUserName={this.state.stateOpponentUsername}
                     cbOnAbort={() => this.onAbortMatch()}
                   />
                 </Grid>
-              )}
+              </Slide>
             </Grid>
           </Container>
         </div>
