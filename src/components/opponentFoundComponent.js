@@ -62,8 +62,8 @@ class OpponentFoundComponent extends React.Component {
             fullWidth
             defaultValue={props.propOpponentUserName}
             variant="outlined"
-            disabled={true}
             InputProps={{
+              readOnly: true,
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton>
