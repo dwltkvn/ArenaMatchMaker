@@ -15,6 +15,12 @@ import Button from "@material-ui/core/Button"
 import IconButton from "@material-ui/core/IconButton"
 import HelpIcon from "@material-ui/icons/Help"
 
+// game mode cards import
+import HistoricBrawlCard from "./GamesModeCards/HistoricBrawlCard"
+import GladiatorCard from "./GamesModeCards/GladiatorCards"
+import ArtisanCard from "./GamesModeCards/ArtisanCard"
+import PauperCard from "./GamesModeCards/PauperCard"
+
 const styles = {
   selectGameMode: {
     minWidth: "100%"
@@ -145,6 +151,15 @@ class RegisterComponent extends React.Component {
           >
             Register
           </Button>
+        </Grid>
+        <Grid item xs={12} />
+        <Grid item xs={12}>
+          {this.state.stateGameMode === "HistoricBrawl" ? (
+            <HistoricBrawlCard />
+          ) : null}
+          {this.state.stateGameMode === "Gladiator" ? <GladiatorCard /> : null}
+          {this.state.stateGameMode === "Artisan" ? <ArtisanCard /> : null}
+          {this.state.stateGameMode === "Pauper" ? <PauperCard /> : null}
         </Grid>
       </Grid>
     )
