@@ -22,6 +22,7 @@ import Slide from "@material-ui/core/Slide"
 // icons
 import CloseIcon from "@material-ui/icons/Close"
 
+// components
 import RegisterCmpnt from "../components/registerComponent"
 import SearchMatchCmpnt from "../components/searchMatchComponent"
 import OpponentFoundCmpnt from "../components/opponentFoundComponent"

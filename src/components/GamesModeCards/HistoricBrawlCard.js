@@ -2,10 +2,18 @@ import React from "react"
 
 // material-ui import
 import Card from "@material-ui/core/Card"
+import CardMedia from "@material-ui/core/CardMedia"
 import CardContent from "@material-ui/core/CardContent"
 import Typography from "@material-ui/core/Typography"
 
-const styles = {}
+// images
+import logo from "../../images/gatsby-icon.png"
+
+const styles = {
+  media: {
+    height: "25vh"
+  }
+}
 
 class HistoricBrawlCard extends React.Component {
   constructor(props) {
@@ -31,6 +39,11 @@ class HistoricBrawlCard extends React.Component {
     return (
       <Card className={classes.root}>
         <CardContent>
+          <CardMedia
+            style={classes.media}
+            image={logo}
+            title="Contemplative Reptile"
+          />
           <Typography gutterBottom variant="h5" component="h2">
             Historic Brawl
           </Typography>
