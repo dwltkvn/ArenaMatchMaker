@@ -34,7 +34,7 @@ class GladiatorCard extends React.Component {
           <Typography gutterBottom variant="h5" component="h2">
             Gladiator
           </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
+          <Typography variant="body2" color="textSecondary" component="span">
             <ul>
               <li>100 cards deck</li>
               <li>Singleton</li>

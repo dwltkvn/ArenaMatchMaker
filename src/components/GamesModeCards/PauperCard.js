@@ -34,7 +34,7 @@ class PauperCard extends React.Component {
           <Typography gutterBottom variant="h5" component="h2">
             Pauper
           </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
+          <Typography variant="body2" color="textSecondary" component="span">
             <ul>
               <li>60 cards deck</li>
               <li>Common cards</li>
