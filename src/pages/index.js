@@ -73,6 +73,7 @@ class MAMMPage extends React.Component {
     this.onLogOut = this.onLogOut.bind(this)
     this.onConfirmation = this.onConfirmation.bind(this)
     this.onAbortMatch = this.onAbortMatch.bind(this)
+    this.onUnload = this.onUnload.bind(this)
 
     // init the class state
     this.state = {
@@ -91,9 +92,25 @@ class MAMMPage extends React.Component {
     this.transitionSpeed = 500
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    window.onbeforeunload = () => {
+      this.onUnload()
+      return undefined // undef -> prevent dialog prompt
+    }
+  }
 
   componentWillUnmount() {}
+
+  onUnload() {
+    const fbpath = `${this.state.stateUID}`
+    const obj = {}
+
+    if (fbpath) {
+      firebase.database().ref(fbpath).off()
+
+      firebase.database().ref(fbpath).set(obj)
+    }
+  }
 
   onRegistering = () => {
     // prepare onAuth callback
